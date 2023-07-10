@@ -1,0 +1,12 @@
+external_flash:
+  address: 0x000000
+  end_address: 0x200000
+  region: external_flash
+  size: 0x200000
+
+mcuboot_secondary:
+  address: 0x00000
+  device: SST26VF016B
+  end_address: 0x73000
+  region: external_flash
+  size: 0x73000

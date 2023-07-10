@@ -1,0 +1,172 @@
+#ifndef BG95_H
+#define BG95_H
+
+#include "StateMachines_Config.h"
+
+#define _USE_MQTT_
+
+#define GPS_PDP "AT+CGDCONT=1,\"IP\",\"public.pccwglobal.hktdcp\""
+#define GPS_POS_TOKEN "AT+QLBSCFG=\"token\",\"41q7p1007W1861f5\""
+#define GPS_MQTT_QMTOPEN "AT+QMTOPEN=0,\"104.218.120.206\",8443"
+#define BG95_PDP "AT+CGDCONT=1,\"IP\",\"public.pccwglobal.hktdcp\""
+//#define BG95_PDP "AT+CGDCONT=1,\"IP\",\"Telenor\""
+//#define BG95_PDP "AT+CGDCONT=1,\"IP\",\"ice.net\""
+//#define BG95_PDP "AT+CGDCONT=1,\"IP\",\"mobinilweb\""
+#define BG95_POS_TOKEN "AT+QLBSCFG=\"token\",\"41q7p1007W1861f5\""
+
+//#define BG95_MQTT_QMTOPEN "AT+QMTOPEN=0,\"iot2.cypoddata.com\",1883"
+#define BG95_MQTT_QMTOPEN "AT+QMTOPEN=0,\"104.218.120.206\",8883"
+
+#define FLASH_SECTOR_SIZE 4096
+#define CREGRepCount 10
+
+#define REMOTE_CONFIG
+
+typedef enum {
+	GPS_STATE_SLEEP, // 0
+	GPS_STATE_WAKEUP, // 1
+	GPS_STATE_INIT_POWER,
+	GPS_STATE_POWERKEY_ON,
+	GPS_STATE_POWERKEY_OFF,
+	GPS_STATE_AWAKE, // 5
+	GPS_STATE_CCLK, // 10
+	GPS_CREG,
+	GPS_ACTIVATE_PDP,
+	GPS_ACTIVATE_PDP_OK, //15
+	GPS_TEMP0,
+	GPS_XTRA_EN,
+	GPS_XTRA_EN_1,
+	GPS_XTRA_EN_1_1,
+	GPS_XTRA_EN3,
+	GPS_XTRA_EN2,
+	GPS_TEMP2, //20
+	GPS_TEMP3,
+	GPS_TEMP4,
+	GPS_TEMP5,
+	GPS_POS_REQ_CHECK_TOKEN,
+	GPS_POS_REQ_OK_TOKEN,
+	GPS_POS_TOKEN_OK_ASYNC,
+	GPS_POS_TOKEN_OK, //25
+	GPS_POS_TRI_OK,
+	GPS_DEACTIVATE_CONTEXT,
+	GPS_SHUTDOWN,
+	GPS_SHUTDOWN_RES,
+	GPS_SHUTDOWN_HARDWARE_RES, //30
+	GPS_GOTO_SLEEP,
+	GPS_WAIT_ON_SLEEP,
+	GPS_CONFIRM_PWR_DWN //33
+} m_pstateGPS;
+typedef struct {
+	int sec, min, hr;
+	int year, month, date;
+} DateTime_t;
+
+extern char sTopicPath[80 + 1];
+extern unsigned long epoch;
+extern bool reqPos;
+extern uint8_t hr24Cnt;
+extern char *temp;
+extern bool OTAupdate;
+
+typedef enum {
+
+	BG95_STATE_SLEEP,
+	BG95_STATE_WAKEUP,
+	BG95_AT_CHECK,
+	BG95_STATE_INIT_POWER,
+	BG95_STATE_POWERKEY_ON,
+	BG95_STATE_POWERKEY_OFF,
+	BG95_STATE_AWAKE,
+	BG95_STATE_IMEI,
+	BG95_STATE_RESPOND_ON_AT,
+	BG95_STATE_CHECK_PIN,
+	BG95_STATE_NET_REG_STATUS,
+	BG95_GET_ICCID,
+	BG95_SETUP_PDP,
+	BG95_SET_GSM_MODE,
+	BG95_ACTIVATE_PDP,
+	BG95_ACTIVATE_PDP_OK,
+	BG95_STATE_CCLK_QUERY,
+	BG95_STATE_CCLK,
+	// MQTT
+	BG95_MQTTS_EN,
+	BG95_SET_SSL_VERSION_3_2,
+	BG95_SET_CIPHERSUITE_2,
+	BG95_SET_SECLEVEL_2,
+	BG95_SSL_IGNORE_TIME,
+	BG95_QMTOPEN,
+	BG95_QMTOPEN_DEFAULT,
+	BG95_QMTCONN,
+	BG95_PULL,
+	BG95_QMTPUB,
+	BG95_QMTDATA,
+	BG95_QMTDISC,
+	BG95_SUB_RECEIVED,
+	BG95_SUB_RECEIVED2,
+	BG95_OTA_Check,
+	BG95_OTA_followup,
+	BG95_OTA_NextPack,
+	BG95_OTA_isFinish,
+	BG95_DEACTIVATE_CONTEXT,
+	BG95_SHUTDOWN,
+	BG95_SHUTDOWN_RES,
+	BG95_SUB_1,
+	BG95_SUB_2,
+	BG95_SUB_3,
+	BG95_SUB_4,
+	BG95_SUB_5,
+	BG95_SUB_6,
+	BG95_SUB_7,
+	BG95_SUB_8,
+	BG95_SUB_9,
+	BG95_SUB_10,
+	BG95_SUB_11,
+	BG95_SUB_12,
+	BG95_SUB_13,
+	BG95_SUB_14,
+	BG95_SUB_15,
+	BG95_GOTO_SLEEP,
+	BG95_WAIT_ON_SLEEP,
+	BG95_CONFIRM_PWR_DWN,
+	BG95_STATE_REPORT_SUCCESSFUL,
+	BG95_FAILED_TO_REPORT,
+	BG95_STATE_HOLD,
+	BG95_SET_HTTP_CONTEXT,
+	BG95_SET_contenttype_JSON,
+	BG95_SET_responseheader_OFF,
+	BG95_SET_SSL_CONTEXT,
+	BG95_SET_SSL_VERSION_3,
+	BG95_SET_CIPHERSUITE,
+	BG95_SET_SECLEVEL,
+	BG95_SET_HTTP_URL_SIZE,
+	BG95_WRITE_URL,
+	BG95_REQ_HTTP,
+	BG95_GET_HTTP_READ,
+	BG95_GET_HTTP_READ2,
+	BG95_FETCH_FILE_HANDLER,
+	BG95_GET_HTTP_READ22,
+	BG95_GET_HTTP_READ5,
+	BG95_GET_HTTP_READ6,
+	BG95_GET_HTTP_READ4,
+	BG95_GET_HTTP_READ44
+
+} m_pstate;
+
+typedef struct {
+	uint32_t state;
+	uint32_t timeOut;
+	char sKey[SKEY_BUFFER_SIZE];
+	char sCmd[SCMD_BUFFER_SIZE];
+	char sRespond[SRESPOND_BUFFER_SIZE];
+} stCmd_t;
+
+unsigned long unixtime(DateTime_t crtime);
+uint8_t initParseCmd(stCmd_t *stCR, uint32_t mode, uint32_t timeOut, char *sKey);
+uint8_t parseCmd(stCmd_t *stCR, unsigned char Ch);
+void parseCmdTimeTick(stCmd_t *stCR);
+uint8_t BG95_StateMachine(stCmd_t *stCR, uint8_t BG95_State);
+uint8_t GPS_StateMachine(stCmd_t *stCR, uint8_t GPS_State);
+
+void parseConfig(char *config);
+
+#endif
