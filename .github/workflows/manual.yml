@@ -8,8 +8,8 @@ jobs:
     container: zephyrprojectrtos/ci:v0.18.4
     strategy:
       matrix:
-        sample: [accelerometer, active_sleep, at_client, battery, blinky, bme280, button, deep_sleep, external_flash, external_rtc, external_rtc_time_sync, gps, led_pwm, mfw_update, nanopb, sms]
-        target: [circuitdojo_feather_nrf9160_ns]
+        sample: [cylock]
+        target: [nrf52dk_nrf52832]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
