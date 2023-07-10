@@ -1,0 +1,44 @@
+# Import requirements for nRF9160 Feather Examples and Drivers
+manifest:
+  remotes:
+    - name: nrfconnect
+      url-base: https://github.com/nrfconnect
+  projects:
+    - name: nrf
+      repo-path: sdk-nrf
+      remote: nrfconnect
+      revision: v1.9.1
+      import: 
+        name-blocklist:
+          - matter
+          - nrf-802154
+          - cjson
+          - openthread
+          - cmock
+          - unity
+          - cddl-gen
+          - homekit
+          - loramac-node
+          - lz4
+          - lvgl
+          - mipi-sys-t
+    # Golioth backend
+    - name: golioth
+      path: modules/lib/golioth
+      revision: e7d6e13a330bb2924088b9ef63268e7e90c09690
+      url: https://github.com/golioth/golioth-zephyr-sdk
+      import: west-external.yml
+    # Pyrinas backend
+    - name: pyrinas
+      url: https://github.com/pyrinas-iot/pyrinas-zephyr
+      revision: v1.7.x
+      path: pyrinas
+      import: true
+    # RTC Driver
+    - name: pcf85063a
+      url: https://github.com/circuitdojo/pcf85063a
+      revision: 0ad0d065d2a2c45ea10c1aa0f08271b86cbbde4e
+      path: pcf85063a
+  self:
+    # This repository should be cloned to nrf9160-feather
+    path: nfed
