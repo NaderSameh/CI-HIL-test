@@ -10,7 +10,7 @@ jobs:
       CMAKE_PREFIX_PATH: /opt/toolchains
     strategy:
       matrix:
-        sample: [cylock]
+        sample: [cylock, tests/base2]
         target: [nrf52dk_nrf52832]
     steps:
       - name: Checkout
@@ -46,7 +46,7 @@ jobs:
       - name: Create build tarball
         working-directory: nader
         run: |
-          tar czf build.tar.gz build/zephyr/merged.hex
+          tar czf build.tar.gz tests/base2/build/zephyr/zephyr.hex
 
       - name: Archive firmware
         uses: actions/upload-artifact@v3
