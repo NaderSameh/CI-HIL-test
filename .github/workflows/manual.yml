@@ -5,9 +5,13 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: zephyrprojectrtos/ci:v0.18.4
+    container:
+      image: zephyrprojectrtos/ci:v0.18.4
+      options: '--entrypoint /bin/bash'
     env:
-      ZEPHYR_SDK_INSTALL_DIR: "/opt/toolchains/zephyr-sdk-0.13.1"
+      ZEPHYR_TOOLCHAIN_VARIANT: zephyr
+      ZEPHYR_SDK_INSTALL_DIR: /opt/toolchains/zephyr-sdk-0.13.1
+      CLANG_ROOT_DIR: /usr/lib/llvm-12
     strategy:
       matrix:
         sample: [cylock]
@@ -33,6 +37,7 @@ jobs:
           pip3 install -U west
           west init -l .
           west update
+          west zephyr-export
           pip3 install -r ../zephyr/scripts/requirements-base.txt
 
       - name: Build ${{ matrix.sample }} for ${{ matrix.target }}
