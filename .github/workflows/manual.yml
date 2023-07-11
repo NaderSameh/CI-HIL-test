@@ -1,24 +1,20 @@
 name: Build
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: zephyrprojectrtos/ci:v0.18.4
-      options: '--entrypoint /bin/bash'
+    container: zephyrprojectrtos/ci:v0.24.5
     env:
-      ZEPHYR_TOOLCHAIN_VARIANT: zephyr
-      ZEPHYR_SDK_INSTALL_DIR: /opt/toolchains/zephyr-sdk-0.13.1
-      CLANG_ROOT_DIR: /usr/lib/llvm-12
+      CMAKE_PREFIX_PATH: /opt/toolchains
     strategy:
       matrix:
-        sample: [cylock]
-        target: [nrf52dk_nrf52832]
+        sample: [accelerometer, active_sleep, at_client, battery, blinky, bme280, button, deep_sleep, external_flash, external_rtc, external_rtc_time_sync, gps, led_pwm, mfw_update, nanopb, sms]
+        target: [circuitdojo_feather_nrf9160_ns]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
           path: nfed
@@ -27,7 +23,6 @@ jobs:
         working-directory: nfed
         id: vars
         run: |
-             echo "$HOME/.local/bin" >> $GITHUB_PATH
              echo "::set-output name=branch::${GITHUB_REF#refs/*/}"
              echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
@@ -37,14 +32,12 @@ jobs:
           pip3 install -U west
           west init -l .
           west update
-          west zephyr-export
           pip3 install -r ../zephyr/scripts/requirements-base.txt
 
       - name: Build ${{ matrix.sample }} for ${{ matrix.target }}
         working-directory: nfed
         run: |
-          export ZEPHYR_BASE=${PWD}
-          west build -b ${{ matrix.target }} -s ${{ matrix.sample }} -p
+          west build -b ${{ matrix.target }} -s samples/${{ matrix.sample }} -p
           mkdir -p .out
           cp build/zephyr/app_update.bin .out/${{ matrix.sample }}_${{ matrix.target }}_app_update.bin
           cp build/zephyr/merged.hex .out/${{ matrix.sample }}_${{ matrix.target }}_merged.hex
