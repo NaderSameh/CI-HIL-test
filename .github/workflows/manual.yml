@@ -47,3 +47,12 @@ jobs:
         with:
           name: nfed_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}
           path: nfed/.out/
+
+  hw_flash_and_test:
+    needs: build
+    runs-on: [self-hosted, has_esp32s3]
+    steps:
+      - name: Flash
+        run: |
+          cd python
+          python3 rtt3.py
