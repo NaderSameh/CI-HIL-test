@@ -50,7 +50,7 @@ jobs:
 
   hw_flash_and_test:
     needs: build
-    runs-on: [self-hosted, has_esp32s3]
+    runs-on: [self-hosted]
     steps:
       - name: Flash
         run: |
