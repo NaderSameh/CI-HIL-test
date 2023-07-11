@@ -86,5 +86,5 @@ jobs:
       - name: Flash and Verify Test Results
         run: |
           cd $HOME/python
-          sudo python3 rtt2.py nRF52832_xxAB
+          sudo python3 rtt2.py nRF52832_xxAB build/zephyr/zephyr.hex
 
