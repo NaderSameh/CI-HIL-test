@@ -46,7 +46,7 @@ jobs:
       - name: Create build tarball
         working-directory: nader
         run: |
-          tar czf build.tar.gz /build/zephyr/zephyr.hex
+          tar czf build.tar.gz tests/base2/build/zephyr/zephyr.hex
 
       - name: Archive firmware
         uses: actions/upload-artifact@v3
