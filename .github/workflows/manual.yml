@@ -17,17 +17,17 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          path: nfed
+          path: nader
 
       - name: Set variables
-        working-directory: nfed
+        working-directory: nader
         id: vars
         run: |
              echo "::set-output name=branch::${GITHUB_REF#refs/*/}"
              echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
       - name: Initialize
-        working-directory: nfed
+        working-directory: nader
         run: |
           pip3 install -U west
           west init -l .
@@ -35,7 +35,7 @@ jobs:
           pip3 install -r ../zephyr/scripts/requirements-base.txt
 
       - name: Build ${{ matrix.sample }} for ${{ matrix.target }}
-        working-directory: nfed
+        working-directory: nader
         run: |
           west build -b ${{ matrix.target }} -s ${{ matrix.sample }} -p
           mkdir -p .out
@@ -48,13 +48,13 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: nfed_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}
-          path: nfed/.out/
-
-      - name: Archive firmware 2
-        uses: actions/upload-artifact@v3
+          path: nader/.out/
+          
+      - name: Upload tarball
+        uses: actions/upload-artifact@v2
         with:
           name: build.tar.gz
-          path: nfed/.out/build.tar.gz
+          path: nader/test/build.tar.gz
 
   hw_flash_and_test:
     needs: build
@@ -70,14 +70,14 @@ jobs:
           path: connection_tests
 
       - name: Download build tarball
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v2
         with:
           name: build.tar.gz
-          path: connection_tests/nfed/.out/
+          path: connection_tests/test/build.tar.gz
 
       - name: Untar
         run: |
-          cd samples/test
+          cd test
           tar xvf build.tar.gz
           
       - name: Flash and Verify Test Results
