@@ -10,7 +10,7 @@ jobs:
       CMAKE_PREFIX_PATH: /opt/toolchains
     strategy:
       matrix:
-        sample: [cylock, cylock/tests/base2]
+        sample: [cylock/tests/base2]
         target: [nrf52dk_nrf52832]
     steps:
       - name: Checkout
@@ -38,9 +38,9 @@ jobs:
         working-directory: nader
         run: |
           west build -b ${{ matrix.target }} -s ${{ matrix.sample }} -p
-          mkdir -p .out
-          cp build/zephyr/app_update.bin .out/${{ matrix.sample }}_${{ matrix.target }}_app_update.bin
-          cp build/zephyr/merged.hex .out/${{ matrix.sample }}_${{ matrix.target }}_merged.hex
+          #mkdir -p .out
+          #cp build/zephyr/app_update.bin .out/${{ matrix.sample }}_${{ matrix.target }}_app_update.bin
+          #cp build/zephyr/merged.hex .out/${{ matrix.sample }}_${{ matrix.target }}_merged.hex
 
 
       - name: Create build tarball
