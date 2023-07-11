@@ -73,7 +73,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build.tar.gz
-          path: connection_tests/samples/test
+          path: connection_tests/nfed/.out/
 
       - name: Untar
         run: |
