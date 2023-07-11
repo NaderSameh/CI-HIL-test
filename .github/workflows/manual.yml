@@ -6,6 +6,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: zephyrprojectrtos/ci:v0.24.8
+    env:
+      ZEPHYR_SDK_INSTALL_DIR: "/opt/toolchains/zephyr-sdk-0.13.1"
     strategy:
       matrix:
         sample: [cylock]
