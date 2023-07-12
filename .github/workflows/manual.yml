@@ -86,7 +86,5 @@ jobs:
           
       - name: Flash and Verify Test Results
         run: |
-          cp zephyr.hex $HOME/python/zephyr.hex
           cd $HOME/python
-          sudo python3 rtt2.py nRF52832_xxAB zephyr.hex
-
+          sudo python3 rtt2.py nRF52832_xxAB  /home/nader/actions-runner/_work/CI-HIL-test/CI-HIL-test/nader/build/zephyr/zephyr.hex
