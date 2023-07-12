@@ -25,7 +25,6 @@ jobs:
         run: |
              echo "::set-output name=branch::${GITHUB_REF#refs/*/}"
              echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-
       - name: Initialize
         working-directory: nader
         run: |
@@ -33,21 +32,19 @@ jobs:
           west init -l .
           west update
           pip3 install -r ../zephyr/scripts/requirements-base.txt
-
       - name: Build ${{ matrix.sample }} for ${{ matrix.target }}
         working-directory: nader
         run: |
           west build -b ${{ matrix.target }} -s ${{ matrix.sample }} -p
+          mkdir -p .out
+          cp build/zephyr/zephyr.hex .out/test_zephyr.hex
           #mkdir -p .out
           #cp build/zephyr/app_update.bin .out/${{ matrix.sample }}_${{ matrix.target }}_app_update.bin
           #cp build/zephyr/merged.hex .out/${{ matrix.sample }}_${{ matrix.target }}_merged.hex
-
-
       - name: Create build tarball
-        working-directory: nader
+        working-directory: nader/.out
         run: |
-          tar czf zephyr.tar.gz build/zephyr/zephyr.hex
-
+          tar czf zephyr.tar.gz test_zephyr.hex
     #  - name: Archive firmware
     #    uses: actions/upload-artifact@v3
     #    with:
@@ -58,7 +55,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: zephyr.tar.gz
-          path: nader/zephyr.tar.gz
+          path: nader/.out
 
   hw_flash_and_test:
     needs: build
@@ -83,4 +80,4 @@ jobs:
       - name: Flash and Verify Test Results
         run: |
           cd $HOME/python
-          sudo python3 rtt2.py nRF52832_xxAB  /home/nader/actions-runner/_work/CI-HIL-test/CI-HIL-test/hex_file/zephyr.hex
+          sudo python3 rtt2.py nRF52832_xxAB  /home/nader/actions-runner/_work/CI-HIL-test/CI-HIL-test/hex_file/test_zephyr.hex
