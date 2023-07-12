@@ -65,26 +65,26 @@ jobs:
     runs-on: [self-hosted]
     defaults:
       run:
-        working-directory: nader
+        working-directory: hamada
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          path: nader
+          path: hamada
 
       - name: Download build tarball
         uses: actions/download-artifact@v3
         with:
           name: zephyr.tar.gz
-          path: nader
+          path: hamada
 
  #     - name: Untar
- #       working-directory: nader
+ #       working-directory: hamada
  #       run: |
  #          tar xvf zephyr.tar.gz
           
       - name: Flash and Verify Test Results
         run: |
           cd $HOME/python
-          sudo python3 rtt2.py nRF52832_xxAB  /home/nader/actions-runner/_work/CI-HIL-test/CI-HIL-test/nader/build/zephyr/zephyr.hex
+          sudo python3 rtt2.py nRF52832_xxAB  /home/nader/actions-runner/_work/CI-HIL-test/CI-HIL-test/hamada/zephyr.hex
