@@ -90,7 +90,6 @@ int test_case_1()
 		myM_NRF->Message.stData.lngL_lbs = 30;
 		MQTT_PushFIFO(1);
 	}
-
 	while (BG95_State_test != BG95_STATE_REPORT_SUCCESSFUL) {
 		BG95_State_test = BG95_StateMachine(&BG95_CR, BG95_State_test);
 		if (BG95_State_test == BG95_QMTPUB && last_BG95_State_test != BG95_QMTPUB)
