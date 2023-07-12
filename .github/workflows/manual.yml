@@ -38,15 +38,17 @@ jobs:
         working-directory: nader
         run: |
           west build -b ${{ matrix.target }} -s ${{ matrix.sample }} -p
+          mkdir -p .out
+          cp build/zephyr/zephyr.hex .out/test_zephyr.hex
           #mkdir -p .out
           #cp build/zephyr/app_update.bin .out/${{ matrix.sample }}_${{ matrix.target }}_app_update.bin
           #cp build/zephyr/merged.hex .out/${{ matrix.sample }}_${{ matrix.target }}_merged.hex
 
 
       - name: Create build tarball
-        working-directory: nader/cylock/tests/base2
+        working-directory: nader/.out
         run: |
-          tar czf zephyr.tar.gz build/zephyr/zephyr.hex
+          tar czf zephyr.tar.gz test_zephyr.hex
 
     #  - name: Archive firmware
     #    uses: actions/upload-artifact@v3
@@ -58,33 +60,29 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: zephyr.tar.gz
-          path: nader
+          path: nader/.out
 
   hw_flash_and_test:
     needs: build
     runs-on: [self-hosted]
     defaults:
       run:
-        working-directory: hamada
+        working-directory: hex_file
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-        with:
-          path: hamada
 
       - name: Download build tarball
         uses: actions/download-artifact@v3
         with:
           name: zephyr.tar.gz
-          path: hamada
+          path: hex_file
 
       - name: Untar
-        working-directory: hamada
+        working-directory: hex_file
         run: |
            tar xvf zephyr.tar.gz
           
       - name: Flash and Verify Test Results
         run: |
           cd $HOME/python
-          sudo python3 rtt2.py nRF52832_xxAB  /home/nader/actions-runner/_work/CI-HIL-test/CI-HIL-test/hamada/build/zephyr/zephyr.hex
+          sudo python3 rtt2.py nRF52832_xxAB  /home/nader/actions-runner/_work/CI-HIL-test/CI-HIL-test/hex_file/zephyr.hex
