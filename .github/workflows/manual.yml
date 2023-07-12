@@ -82,7 +82,7 @@ jobs:
       - name: Untar
         working-directory: nader
         run: |
-          tar xvf build.tar.gz
+          tar xvf zephyr.tar.gz
           
       - name: Flash and Verify Test Results
         run: |
