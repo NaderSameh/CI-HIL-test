@@ -38,17 +38,15 @@ jobs:
         working-directory: nader
         run: |
           west build -b ${{ matrix.target }} -s ${{ matrix.sample }} -p
-          mkdir -p .out
-          cp build/zephyr/zephyr.hex .out/test_zephyr.hex
           #mkdir -p .out
           #cp build/zephyr/app_update.bin .out/${{ matrix.sample }}_${{ matrix.target }}_app_update.bin
           #cp build/zephyr/merged.hex .out/${{ matrix.sample }}_${{ matrix.target }}_merged.hex
 
 
       - name: Create build tarball
-        working-directory: nader/.out
+        working-directory: nader
         run: |
-          tar czf zephyr.tar.gz test_zephyr.hex
+          tar czf zephyr.tar.gz build/zephyr/zephyr.hex
 
     #  - name: Archive firmware
     #    uses: actions/upload-artifact@v3
@@ -60,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: zephyr.tar.gz
-          path: nader/.out
+          path: nader/zephyr.tar.gz
 
   hw_flash_and_test:
     needs: build
