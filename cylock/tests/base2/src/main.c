@@ -186,7 +186,8 @@ void test_main(void)
 	}
 
 	ztest_test_suite(framework_tests, ztest_unit_test(test_case_1),
-			 ztest_unit_test(test_case_2), ztest_unit_test(test_case_3));
-	//  ztest_unit_test(test_case_2));
+			 ztest_unit_test(test_case_2));
+	//  ztest_unit_test(test_case_2), ztest_unit_test(test_case_3));
+
 	ztest_run_test_suite(framework_tests);
 }

@@ -35,18 +35,23 @@ try:
 except ImportError:
     import _thread as thread
 
-def wait_for_str_in_line(line, str, timeout_s=200, log=True):
-    start_time = time()
+def wait_for_str_in_line(str, jlink, log=True):
     while True:
-        line = ser.readline().decode('utf-8', errors='replace').replace("\r\n", "")
+        bytes = jlink.rtt_read(0, 1024)
+        line = ("".join(map(chr, bytes)))        
         if line != "" and log:
-            print(line)
+           sys.stdout.write(line)
+           sys.stdout.flush()
         if "CPU halted" in line:
             raise RuntimeError(line)
-        if time() - start_time > timeout_s:
-            raise RuntimeError('Timeout')
         if str in line:
-            return line
+            print("STOP !")
+            return 0
+        if 'FAIL' in line:
+            print("STOP 2")
+            return 1
+        time.sleep(0.1)
+
 
 def read_rtt(jlink):
     """Reads the JLink RTT buffer #0 at 10Hz and prints to stdout.
@@ -68,11 +73,13 @@ def read_rtt(jlink):
     """
     try:
         while jlink.connected():
-            terminal_bytes = jlink.rtt_read(0, 1024)
-            if terminal_bytes:
-                sys.stdout.write("".join(map(chr, terminal_bytes)))
-                sys.stdout.flush()
-            time.sleep(0.1)
+           ret =  wait_for_str_in_line('SUCCESS',jlink)
+           if ret == 0:           
+              sys.exit(0)
+           elif ret == 1:
+              sys.exit(1)
+           
+           
     except Exception:
         print("IO read thread exception, exiting...")
         thread.interrupt_main()
@@ -104,7 +111,7 @@ def write_rtt(jlink):
         raise
 
 
-def main(target_device, block_address=None):
+def main(target_device, path, block_address=None):
     """Creates an interactive terminal to the target via RTT.
 
     The main loop opens a connection to the JLink, and then connects
@@ -131,6 +138,9 @@ def main(target_device, block_address=None):
     print("connecting to %s..." % target_device)
     jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
     jlink.connect(target_device)
+    jlink.reset(1,True)
+    jlink.flash_file(path,0x00)
+    jlink.reset(1,False) 
     print("connected, starting RTT...")
     jlink.rtt_start(block_address)
 
@@ -156,9 +166,10 @@ def main(target_device, block_address=None):
                                                                   buf.SizeOfBuffer, buf.Flags))
 
     try:
-        thread.start_new_thread(read_rtt, (jlink,))
-        thread.start_new_thread(write_rtt, (jlink,))
-        while jlink.connected():
+       # thread.start_new_thread(read_rtt, (jlink,))
+       # thread.start_new_thread(write_rtt, (jlink,))
+         read_rtt(jlink)    
+    while jlink.connected():
             time.sleep(1)
         print("JLink disconnected, exiting...")
     except KeyboardInterrupt:
@@ -172,9 +183,13 @@ if __name__ == "__main__":
         "target_cpu",
         help="Device Name (see https://www.segger.com/supported-devices/jlink/)")
     parser.add_argument(
+       "path" )
+
+    parser.add_argument(
         "rtt_block_address", help="RTT block address in hex",
         type=lambda x: int(x, 16), nargs="?")
 
     args = parser.parse_args()
 
-    sys.exit(main(args.target_cpu, args.rtt_block_address))
+    sys.exit(main(args.target_cpu,args.path, args.rtt_block_address))
+
