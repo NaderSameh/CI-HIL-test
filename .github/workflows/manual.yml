@@ -44,9 +44,9 @@ jobs:
 
 
       - name: Create build tarball
-        working-directory: nader/cylock/tests/base2/build/zephyr
+        working-directory: nader/cylock/tests/base2
         run: |
-          tar czf zephyr.tar.gz zephyr.hex
+          tar czf zephyr.tar.gz build/zephyr/zephyr.hex
 
     #  - name: Archive firmware
     #    uses: actions/upload-artifact@v3
@@ -79,12 +79,12 @@ jobs:
           name: zephyr.tar.gz
           path: hamada
 
- #     - name: Untar
- #       working-directory: hamada
- #       run: |
- #          tar xvf zephyr.tar.gz
+      - name: Untar
+        working-directory: hamada
+        run: |
+           tar xvf zephyr.tar.gz
           
       - name: Flash and Verify Test Results
         run: |
           cd $HOME/python
-          sudo python3 rtt2.py nRF52832_xxAB  /home/nader/actions-runner/_work/CI-HIL-test/CI-HIL-test/hamada/zephyr.hex
+          sudo python3 rtt2.py nRF52832_xxAB  /home/nader/actions-runner/_work/CI-HIL-test/CI-HIL-test/hamada/build/zephyr/zephyr.hex
