@@ -45,11 +45,22 @@ jobs:
         working-directory: nader/.out
         run: |
           tar czf zephyr.tar.gz test_zephyr.hex
-    #  - name: Archive firmware
-    #    uses: actions/upload-artifact@v3
-    #    with:
-    #      name: nfed_${{ steps.vars.outputs.branch }}_${{ steps.vars.outputs.sha_short }}
-    #      path: nader/.out/
+        
+        
+      - name: Build main project for nrf52dk_nrf52832  
+        working-directory: nader
+        run: |
+          west build -b nrf52dk_nrf52832 -s cylock -p
+          mkdir -p .archive
+          cp build/zephyr/app_update.bin .archive/app_update.bin
+          cp build/zephyr/merged.hex .archive/merged.hex
+          
+          
+      - name: Archive firmware
+        uses: actions/upload-artifact@v3
+        with:
+          name: CyLock_built_images
+          path: nader/.archive
           
       - name: Upload tarball
         uses: actions/upload-artifact@v3
